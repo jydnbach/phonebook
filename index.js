@@ -33,10 +33,27 @@ app.get('/api/persons', (req, res) => {
 });
 
 app.get('/info', (req, res) => {
+  const reqDate = new Date().toDateString();
+  const reqTime = new Date().toLocaleTimeString();
+
   res.send(`
     Phonebook has info for ${persons.length} people
-    ${new Date().toDateString()} ${new Date().toLocaleTimeString()}
+    ${reqDate} ${reqTime}
     `);
+});
+
+// fetching single set of data
+
+app.get('/api/persons/:id', (req, res) => {
+  const id = req.params.id;
+  const person = persons.find((person) => person.id === id);
+  console.log(id);
+  console.log(person);
+  if (person) {
+    res.json(person);
+  } else {
+    res.status(404).end();
+  }
 });
 
 const PORT = 3001;
