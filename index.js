@@ -16,6 +16,18 @@ morgan.token('requestBody', (req, res) => {
   return '';
 });
 
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message);
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
+  }
+
+  next(error);
+};
+
 app.use(
   morgan(function (tokens, req, res) {
     return JSON.stringify(
@@ -35,9 +47,11 @@ app.use(
 
 // fetch
 app.get('/api/persons', (req, res) => {
-  Person.find({}).then((persons) => {
-    res.json(persons);
-  });
+  Person.find({})
+    .then((persons) => {
+      res.json(persons);
+    })
+    .catch((err) => next(err));
 });
 
 // add
@@ -55,12 +69,17 @@ app.post('/api/persons', (req, res) => {
     number: body.number,
   });
 
-  person.save().then((data) => res.json(data));
+  person
+    .save()
+    .then((data) => res.json(data))
+    .catch((err) => next(err));
 });
 
 // delete
 app.delete('/api/persons/:id', (req, res) => {
-  Person.findByIdAndDelete(req.params.id).then(() => res.status(204).end());
+  Person.findByIdAndDelete(req.params.id)
+    .then(() => res.status(204).end())
+    .catch((err) => next(err));
 });
 
 // app.get('/info', (req, res) => {
@@ -84,6 +103,8 @@ app.delete('/api/persons/:id', (req, res) => {
 //     res.status(404).end();
 //   }
 // });
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
