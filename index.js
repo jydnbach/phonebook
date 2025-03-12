@@ -82,6 +82,18 @@ app.delete('/api/persons/:id', (req, res) => {
     .catch((err) => next(err));
 });
 
+// update
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body;
+  Person.findByIdAndUpdate(
+    req.params.id,
+    { number: body.number },
+    { new: true }
+  )
+    .then((updatedPerson) => res.json(updatedPerson))
+    .catch((err) => next(err));
+});
+
 // app.get('/info', (req, res) => {
 //   const reqDate = new Date().toDateString();
 //   const reqTime = new Date().toLocaleTimeString();
