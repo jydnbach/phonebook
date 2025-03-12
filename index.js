@@ -9,7 +9,7 @@ const Person = require('./models/person');
 app.use(express.static('dist'));
 app.use(express.json());
 
-morgan.token('requestBody', (req, res) => {
+morgan.token('requestBody', (req) => {
   if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
     return JSON.stringify(req.body);
   }
