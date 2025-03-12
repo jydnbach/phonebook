@@ -1,13 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const app = express();
 
 require('dotenv').config();
 
 const Person = require('./models/person');
-
-app.use(express.static('dist'));
-app.use(express.json());
 
 morgan.token('requestBody', (req) => {
   if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
@@ -44,6 +42,9 @@ app.use(
     );
   })
 );
+app.use(express.static('dist'));
+app.use(express.json());
+app.use(cors());
 
 // fetch all
 app.get('/api/persons', (req, res, next) => {
