@@ -46,7 +46,7 @@ app.use(
 );
 
 // fetch all
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
   Person.find({})
     .then((persons) => {
       res.json(persons);
@@ -55,7 +55,7 @@ app.get('/api/persons', (req, res) => {
 });
 
 // add
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
 
   if (!body.name || !body.number) {
@@ -70,13 +70,13 @@ app.post('/api/persons', (req, res) => {
   });
 
   person
-    .save()
+    .save({ validateBeforeSave: true, context: 'query' })
     .then((data) => res.json(data))
     .catch((err) => next(err));
 });
 
 // delete
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
     .then(() => res.status(204).end())
     .catch((err) => next(err));
@@ -88,14 +88,14 @@ app.put('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndUpdate(
     req.params.id,
     { number: body.number },
-    { new: true }
+    { new: true, runValidators: true, context: 'query' }
   )
     .then((updatedPerson) => res.json(updatedPerson))
     .catch((err) => next(err));
 });
 
 // fetch individual
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
     .then((data) => {
       if (data) {
