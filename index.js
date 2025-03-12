@@ -33,10 +33,34 @@ app.use(
   })
 );
 
+// fetch
 app.get('/api/persons', (req, res) => {
   Person.find({}).then((persons) => {
     res.json(persons);
   });
+});
+
+// add
+app.post('/api/persons', (req, res) => {
+  const body = req.body;
+
+  if (!body.name || !body.number) {
+    return res.status(400).json({
+      error: 'Name or number missing',
+    });
+  }
+
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  });
+
+  person.save().then((data) => res.json(data));
+});
+
+// delete
+app.delete('/api/persons/:id', (req, res) => {
+  Person.findByIdAndDelete(req.params.id).then(() => res.status(204).end());
 });
 
 // app.get('/info', (req, res) => {
@@ -61,33 +85,8 @@ app.get('/api/persons', (req, res) => {
 //   }
 // });
 
-// // delete
-// app.delete('/api/persons/:id', (req, res) => {
-//   const id = req.params.id;
-//   persons = persons.filter((person) => person.id === id);
+const PORT = process.env.PORT;
 
-//   res.status(204).end();
-// });
-
-// add
-app.post('/api/persons', (req, res) => {
-  const body = req.body;
-
-  if (!body.name || !body.number) {
-    return res.status(400).json({
-      error: 'Name or number missing',
-    });
-  }
-
-  const person = new Person({
-    name: body.name,
-    number: body.number,
-  });
-
-  person.save().then((data) => res.json(data));
-});
-
-const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
