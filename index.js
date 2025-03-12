@@ -45,7 +45,7 @@ app.use(
   })
 );
 
-// fetch
+// fetch all
 app.get('/api/persons', (req, res) => {
   Person.find({})
     .then((persons) => {
@@ -94,6 +94,19 @@ app.put('/api/persons/:id', (req, res, next) => {
     .catch((err) => next(err));
 });
 
+// fetch individual
+app.get('/api/persons/:id', (req, res) => {
+  Person.findById(req.params.id)
+    .then((data) => {
+      if (data) {
+        res.json(data);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((err) => next(err));
+});
+
 // app.get('/info', (req, res) => {
 //   const reqDate = new Date().toDateString();
 //   const reqTime = new Date().toLocaleTimeString();
@@ -102,18 +115,6 @@ app.put('/api/persons/:id', (req, res, next) => {
 //     Phonebook has info for ${persons.length} people
 //     ${reqDate} ${reqTime}
 //     `);
-// });
-
-// // fetching single set of data
-// app.get('/api/persons/:id', (req, res) => {
-//   const id = req.params.id;
-//   const person = persons.find((person) => person.id === id);
-
-//   if (person) {
-//     res.json(person);
-//   } else {
-//     res.status(404).end();
-//   }
 // });
 
 app.use(errorHandler);
