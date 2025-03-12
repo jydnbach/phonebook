@@ -2,6 +2,10 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 
+require('dotenv').config();
+
+const Person = require('./models/person');
+
 app.use(express.static('dist'));
 app.use(express.json());
 
@@ -57,68 +61,70 @@ app.get('', (req, res) => {
 });
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons);
+  Person.find({}).then((persons) => {
+    res.json(persons);
+  });
 });
 
-app.get('/info', (req, res) => {
-  const reqDate = new Date().toDateString();
-  const reqTime = new Date().toLocaleTimeString();
+// app.get('/info', (req, res) => {
+//   const reqDate = new Date().toDateString();
+//   const reqTime = new Date().toLocaleTimeString();
 
-  res.send(`
-    Phonebook has info for ${persons.length} people
-    ${reqDate} ${reqTime}
-    `);
-});
+//   res.send(`
+//     Phonebook has info for ${persons.length} people
+//     ${reqDate} ${reqTime}
+//     `);
+// });
 
-// fetching single set of data
-app.get('/api/persons/:id', (req, res) => {
-  const id = req.params.id;
-  const person = persons.find((person) => person.id === id);
+// // fetching single set of data
+// app.get('/api/persons/:id', (req, res) => {
+//   const id = req.params.id;
+//   const person = persons.find((person) => person.id === id);
 
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
-});
+//   if (person) {
+//     res.json(person);
+//   } else {
+//     res.status(404).end();
+//   }
+// });
 
-// delete
-app.delete('/api/persons/:id', (req, res) => {
-  const id = req.params.id;
-  persons = persons.filter((person) => person.id === id);
+// // delete
+// app.delete('/api/persons/:id', (req, res) => {
+//   const id = req.params.id;
+//   persons = persons.filter((person) => person.id === id);
 
-  res.status(204).end();
-});
+//   res.status(204).end();
+// });
 
-// add
-app.post('/api/persons', (req, res) => {
-  const id = Math.floor(Math.random());
-  const body = req.body;
+// // add
+// app.post('/api/persons', (req, res) => {
+//   const id = Math.floor(Math.random());
+//   const body = req.body;
 
-  const existingName = persons.find((person) => person.name === body.name);
+//   const existingName = persons.find((person) => person.name === body.name);
 
-  if (!body.name || !body.number) {
-    return res.status(400).json({
-      error: 'Name or number missing',
-    });
-  }
+//   if (!body.name || !body.number) {
+//     return res.status(400).json({
+//       error: 'Name or number missing',
+//     });
+//   }
 
-  if (existingName) {
-    return res.status(400).json({
-      error: 'Name already exists',
-    });
-  }
+//   if (existingName) {
+//     return res.status(400).json({
+//       error: 'Name already exists',
+//     });
+//   }
 
-  const person = {
-    name: body.name,
-    number: body.number,
-    id: id,
-  };
+//   const person = {
+//     name: body.name,
+//     number: body.number,
+//     id: id,
+//   };
 
-  persons = persons.concat(person);
+//   persons = persons.concat(person);
 
-  res.json(person);
-});
+//   res.json(person);
+// });
 
 const PORT = 3001;
 app.listen(PORT, () => {
