@@ -33,33 +33,6 @@ app.use(
   })
 );
 
-let persons = [
-  {
-    id: '1',
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: '2',
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: '3',
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: '4',
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
-
-app.get('', (req, res) => {
-  res.send('<h1>hello world</h1>');
-});
-
 app.get('/api/persons', (req, res) => {
   Person.find({}).then((persons) => {
     res.json(persons);
@@ -96,35 +69,23 @@ app.get('/api/persons', (req, res) => {
 //   res.status(204).end();
 // });
 
-// // add
-// app.post('/api/persons', (req, res) => {
-//   const id = Math.floor(Math.random());
-//   const body = req.body;
+// add
+app.post('/api/persons', (req, res) => {
+  const body = req.body;
 
-//   const existingName = persons.find((person) => person.name === body.name);
+  if (!body.name || !body.number) {
+    return res.status(400).json({
+      error: 'Name or number missing',
+    });
+  }
 
-//   if (!body.name || !body.number) {
-//     return res.status(400).json({
-//       error: 'Name or number missing',
-//     });
-//   }
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  });
 
-//   if (existingName) {
-//     return res.status(400).json({
-//       error: 'Name already exists',
-//     });
-//   }
-
-//   const person = {
-//     name: body.name,
-//     number: body.number,
-//     id: id,
-//   };
-
-//   persons = persons.concat(person);
-
-//   res.json(person);
-// });
+  person.save().then((data) => res.json(data));
+});
 
 const PORT = 3001;
 app.listen(PORT, () => {
